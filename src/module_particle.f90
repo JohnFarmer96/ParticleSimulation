@@ -10,7 +10,7 @@ MODULE module_particle
         ! Current Velocity [m/s]
         DOUBLE PRECISION, DIMENSION(dim) :: v
 
-        ! Current Force [N = kg·m/s]
+        ! Current Force [µN = µg·m/s]
         DOUBLE PRECISION, DIMENSION(dim) :: f
 
         ! Particle Core Data (d = diameter [µm])

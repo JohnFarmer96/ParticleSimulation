@@ -59,9 +59,6 @@ MODULE module_parameters
     ! Maximum Velocity of Particles when sneezing [m/s]
     DOUBLE PRECISION, PARAMETER :: sneeze_vel = 44
 
-    ! Unit conversion
-    DOUBLE PRECISION, PARAMETER :: sys_con = 1000000000000.d0
-
     ! ========================================================
 
 CONTAINS

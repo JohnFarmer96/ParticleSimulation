@@ -48,6 +48,7 @@ PROGRAM test
     ! Save initial configuration
     data_array = output(start_idx=1, end_idx=concentration)
     call write_to_file(base_path, n_cur)
+    print *,"Initialization Saved"
     
     ! Execute Simulation
     n_iter = INT(t_total/dt)
@@ -61,7 +62,7 @@ PROGRAM test
     print *,"Simulation Completed"
 
     ! Print Success
-    print *,"Done"
+    print *,"Program Done"
 
 CONTAINS 
 

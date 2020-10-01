@@ -6,7 +6,7 @@ MODULE module_evaporation
 
 CONTAINS
 
-    ! Update Particle Diameter 
+    ! Update Particle Diameter [µm]
     SUBROUTINE evaluate_evaporation(numeric_integration_procedure, prtcl, dt)
         ! Desired numeric integration procedure (Euler, Runge-Kutta, ...)
         PROCEDURE(num_int_procedure) :: numeric_integration_procedure
@@ -117,9 +117,11 @@ CONTAINS
         DOUBLE PRECISION, INTENT(IN) :: T_environment
         ! Reynolds number
         DOUBLE PRECISION :: Re
+        ! Conversion Factor (m to µm)
+        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-6
 
         ! Reynolds Equation
-        Re = velocity/nu_air(T_environment)*diameter/sqrt(sys_con)
+        Re = velocity/nu_air(T_environment)*diameter*conversion
         ! print *,"Velocity: ",velocity
         ! print *,"nu: ", nu_air(T_environment)
         ! print *,"diameter: ", diameter
@@ -148,8 +150,10 @@ CONTAINS
         DOUBLE PRECISION, INTENT(IN) :: diameter
         ! Mass Transfer Coefficient [µm/s]
         DOUBLE PRECISION :: h_m
+        ! Conversion Factor (m to µm)
+        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E12
 
-        h_m = D_Coeff(T_particle, T_environment)*sys_con/diameter*Sh(velocity, diameter, T_environment, T_particle) 
+        h_m = D_Coeff(T_particle, T_environment)/diameter*Sh(velocity, diameter, T_environment, T_particle)*conversion
         !print *,"h_m: ",h_m
         !print *,""
     END FUNCTION

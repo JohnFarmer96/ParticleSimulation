@@ -7,7 +7,7 @@ MODULE module_movement
 
 CONTAINS
 
-    ! Update Particle Movement 
+    ! Update Particle Movement [location: m, velocity: m/s, acceleration: m/s²]
     SUBROUTINE evaluate_movement(numeric_integration_procedure, prtcl, dt)
         ! Desired numeric integration procedure (Euler, Runge-Kutta, ...)
         PROCEDURE(num_int_procedure) :: numeric_integration_procedure
@@ -26,11 +26,10 @@ CONTAINS
         y(SIZE(y, DIM=1)/2+1:) = prtcl%v
 
         call evaluate_force(prtcl)
-        params(1) = prtcl%f(1)
-        params(2) = prtcl%f(2)
-        params(3) = prtcl%f(3)
-        ! Convert mass from femtogram to kg (10¹⁸)
-        params(4) = (mass_core(prtcl) + mass_shell(prtcl))/(sys_con*sqrt(sys_con))
+        params(1) = prtcl%f(1) ![µN]
+        params(2) = prtcl%f(2) ![µN]
+        params(3) = prtcl%f(3) ![µN]
+        params(4) = (mass_core(prtcl) + mass_shell(prtcl)) ![fg]
 
         ! Update Key Value
         call numeric_integration_procedure(dydt, y, dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
@@ -51,19 +50,23 @@ CONTAINS
         DOUBLE PRECISION, DIMENSION(alg_dim), INTENT(IN) :: y
         DOUBLE PRECISION, DIMENSION(alg_dim) :: dydt
 
+        ! Conversion factor for acceleration 
+        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E9
+
         ! Resolve params (Individually)
         DOUBLE PRECISION :: f_x
         DOUBLE PRECISION :: f_y
         DOUBLE PRECISION :: f_z
         DOUBLE PRECISION :: mass 
 
+        ! Force in [µN] and Mass in [fg]
         f_x = params(1)
         f_y = params(2)
         f_z = params(3)
         mass = params(4)
 
         dydt(1:alg_dim/2) = y(alg_dim/2+1:)
-        dydt(alg_dim/2+1:) = (/ f_x/mass, f_y/mass, f_z/mass /)
+        dydt(alg_dim/2+1:) = (/ f_x/mass*conversion, f_y/mass*conversion, f_z/mass*conversion /)
     END FUNCTION
 
 END MODULE module_movement

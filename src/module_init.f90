@@ -51,15 +51,17 @@ CONTAINS
     SUBROUTINE initialize_structure(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
+        ! Conversion factor [nm to mm]
+        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-3
         
         DOUBLE PRECISION :: buffer
         ! Assign diameter of core [10nm...1000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_core = (10 + 990*buffer)/1000.d0
+        prtcl%d_core = (10 + 990*buffer)*conversion
 
         ! Assign diameter of shell [d_core...10µm = 5.000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_shell = prtcl%d_core + 4000*buffer/1000.d0
+        prtcl%d_shell = prtcl%d_core + 4000*buffer*conversion
 
         ! Assign temperature of particle [between 20 and 35 °C] and convert to [K]
         call RANDOM_NUMBER(buffer)
