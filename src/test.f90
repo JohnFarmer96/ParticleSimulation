@@ -31,7 +31,7 @@ PROGRAM test
     ! Data Array 
     DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: data_array
     ! Number of Iterations
-    INTEGER :: n, niter
+    INTEGER :: n_cur, n_iter
 
     print *,"Started" 
 
@@ -41,25 +41,24 @@ PROGRAM test
     print *,"Preparation Completed"
 
     ! Initialize Particles
-    n = 0
+    n_cur = 0
     call initialize(concentration, intensity, T_environment, humidity, v_wind)
     print *,"Initialization Complete"
 
     ! Save initial configuration
     data_array = output(start_idx=1, end_idx=concentration)
-    call write_to_file(base_path, n)
+    call write_to_file(base_path, n_cur)
     
     ! Execute Simulation
-    niter = INT(t_total/dt)
+    n_iter = INT(t_total/dt)
     print *,"Simulation Started"
-    do n = 1, niter
+    do n_cur = 1, n_iter
         call update(euler, euler, dt)
+        ! Write result
+        data_array = output(start_idx=1, end_idx=concentration)
+        call write_to_file(base_path, n_cur)
     end do
     print *,"Simulation Completed"
-
-    ! Write result
-    data_array = output(start_idx=1, end_idx=concentration)
-    call write_to_file(base_path, n)
 
     ! Print Success
     print *,"Done"
@@ -119,15 +118,13 @@ CONTAINS
 
         ! Adapt filename
         CHARACTER(LEN=128) :: filename
-        CHARACTER :: iteration_state 
+        CHARACTER(LEN=128) :: filename_suffix 
+        CHARACTER(LEN=20) :: FMT
 
-        IF (n_current .GT. 0) THEN
-            iteration_state = '1'
-        ELSE
-            iteration_state = '0'
-        END IF
+        WRITE(FMT,'("(I", I0, ")")') INT(n_current/10)+1
+        write (filename_suffix, FMT) n_current
 
-        filename = TRIM(filename_base)//iteration_state//'.dat'
+        filename = TRIM(filename_base)//TRIM(filename_suffix)//'.dat'
 
         print *,"Writing at: "//filename
         ! Open Textfile & Verify Success

@@ -1,7 +1,7 @@
 10          :: concentration
 0.1         :: intensity
 0.01        :: dt
-0.03          :: t_total
+0.1          :: t_total
 1           :: v_wind_x
 0           :: v_wind_y
 0           :: v_wind_z
