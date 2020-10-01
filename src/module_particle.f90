@@ -13,10 +13,10 @@ MODULE module_particle
         ! Current Force [N = kg·m/s]
         DOUBLE PRECISION, DIMENSION(dim) :: f
 
-        ! Particle Core Data (d = diameter [m])
+        ! Particle Core Data (d = diameter [µm])
         DOUBLE PRECISION :: d_core
 
-        ! Particle Shell Data (d = diameter [m])
+        ! Particle Shell Data (d = diameter [µm])
         DOUBLE PRECISION :: d_shell
 
         ! Temperature of particle [K]
@@ -44,54 +44,55 @@ MODULE module_particle
     
 CONTAINS
 
+    ! Euclidic norm of velocity of particle
     FUNCTION v_euclid(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(IN) :: prtcl
-        ! Mass of particle [kg]
+        ! Euclidic norm of velocity of particle [m/s]
         DOUBLE PRECISION :: v_euclid
 
         ! Calculation
-        v_euclid = sqrt(sum(prtcl%v**2))
+        v_euclid = abs(sqrt(sum(prtcl%v**2)))
     END FUNCTION
 
-    ! Get mass of particle core [kg]
+    ! Get mass of particle core [fg = femtogramm]
     FUNCTION mass_core(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(IN) :: prtcl
-        ! Mass of particle [kg]
+        ! Mass of particle [fg]
         DOUBLE PRECISION :: mass_core
 
         ! Calculation
         mass_core = vol_core(prtcl) * rho_cov2
     END FUNCTION
 
-    !Get volume of particle core [m³]
+    !Get volume of particle core [µm³]
     FUNCTION vol_core(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(IN) :: prtcl
-        ! Volume of particle core [m³]
+        ! Volume of particle core [µm³]
         DOUBLE PRECISION :: vol_core
 
         ! Calculation
-        vol_core = (prtcl%d_core/2)**3 *PI*4/3
+        vol_core = (prtcl%d_core/2)**3*PI*4/3
     END FUNCTION
 
-    ! Get mass of particle shell [kg]
+    ! Get mass of particle shell [fg = femtogramm]
     FUNCTION mass_shell(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(IN) :: prtcl
-        ! Mass of particle shell [kg]
+        ! Mass of particle shell [fg]
         DOUBLE PRECISION :: mass_shell
 
         ! Calculation
         mass_shell = vol_shell(prtcl) * rho_H20
     END FUNCTION
 
-    !Get volume of particle shell [m³]
+    !Get volume of particle shell [µm³]
     FUNCTION vol_shell(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(IN) :: prtcl
-        ! Volume of particle shell [m³]
+        ! Volume of particle shell [µm³]
         DOUBLE PRECISION :: vol_shell
 
         ! Calculation
@@ -106,6 +107,7 @@ CONTAINS
         ! Check if shell diameter is less or equal to certain threshold (hard-coded: 1%) of core diameter
         IF ( prtcl%d_shell .le. 1.01*prtcl%d_core ) THEN
             prtcl%core_only = .TRUE.
+            prtcl%d_shell = prtcl%d_core
         ELSE
             prtcl%core_only = .FALSE.
         END IF
@@ -117,8 +119,9 @@ CONTAINS
         TYPE(particle), INTENT(INOUT) :: prtcl
 
         ! Check if z-coordinate is less or equal to 0 (ground-level)
-        IF ( prtcl%r(3) .le. 0 ) THEN
+        IF ( prtcl%r(3) .le. 0.d0 ) THEN
             prtcl%active = .FALSE.
+            prtcl%r(3) = 0
         ELSE
             prtcl%active = .TRUE.
         END IF

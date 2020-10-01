@@ -24,6 +24,7 @@ CONTAINS
         IF ( prtcl%core_only .eqv. .FALSE.) THEN
 
             ! Prepare function arguments
+            ! print *,"shell: ",prtcl%d_shell
             y(1) = prtcl%d_shell
             params(1) = prtcl%T
             params(2) = prtcl%T_environment
@@ -40,7 +41,7 @@ CONTAINS
 
     END SUBROUTINE
 
-    ! Diffusion Coefficient
+    ! Diffusion Coefficient [m²/s = = µm²/s * 10¹²]
     FUNCTION D_Coeff(T_particle, T_environment)
         ! Temperature of Particle T_prtcl and Environment T_env [K]
         DOUBLE PRECISION, INTENT(IN) :: T_particle, T_environment
@@ -52,6 +53,7 @@ CONTAINS
         ! Computation
         T_m = (T_particle + T_environment)/2
         D_Coeff = D_0*(T_m/T_0)**1.8
+        ! print *,"D",D_Coeff
     END FUNCTION
 
     ! Calculate partial pressure of H2O [Pa = kg⋅m⁻¹⋅s⁻²]
@@ -89,24 +91,70 @@ CONTAINS
         pinf_H2O = humidity*p0_H2O(T_environment)
     END FUNCTION
 
-    ! Calculate mass transfer coefficient [m/s]
-    FUNCTION h_m(diameter, T_environment, T_particle, velocity, alg_dim)
+    ! Calculate Sherwood number [dimensionless]
+    FUNCTION Sh(velocity, diameter, T_environment, T_particle)
         ! Temperature of environment and particle [K]
         DOUBLE PRECISION, INTENT(IN) :: T_environment, T_particle
-        ! Diameter of particle (amount) [m]
+        ! Velocity of particle [m/s]
         DOUBLE PRECISION, INTENT(IN) :: velocity
-        ! Dimension of Algorithm
-        INTEGER, INTENT(IN) :: alg_dim
-        ! Diameter of particle [m]
-        DOUBLE PRECISION, DIMENSION(alg_dim), INTENT(IN) :: diameter
-        ! Mass Transfer Coefficient [m/s]
-        DOUBLE PRECISION, DIMENSION(alg_dim) :: h_m
+        ! Diameter of particle [µm]
+        DOUBLE PRECISION, INTENT(IN) :: diameter
+        ! Sherwood number
+        DOUBLE PRECISION :: Sh
 
-        ! Calculation
-        h_m = 1.14*nu_air(T_environment)**(-1.0/6)*D_Coeff(T_particle, T_environment)**(2.0/3)*velocity**(1.0/2)*diameter**(-1.0/2)
+        ! Froessling Equation
+        Sh = 2 + 0.552*Re(velocity, diameter, T_environment)**(0.5)*Sc(T_environment, T_particle)**(0.33)
+        ! print *,"Sherwood: ",Sh
     END FUNCTION
 
-    ! 1st Order Derivative of particle diameter [m/s]
+    ! Calculate Reynolds number [dimensionless]
+    FUNCTION Re(velocity, diameter, T_environment)
+        ! Velocity of particle [m/s]
+        DOUBLE PRECISION, INTENT(IN) :: velocity
+        ! Diameter of particle [µm]
+        DOUBLE PRECISION, INTENT(IN) :: diameter
+        ! Temperature of environment and particle [K]
+        DOUBLE PRECISION, INTENT(IN) :: T_environment
+        ! Reynolds number
+        DOUBLE PRECISION :: Re
+
+        ! Reynolds Equation
+        Re = velocity/nu_air(T_environment)*diameter/sqrt(sys_con)
+        ! print *,"Velocity: ",velocity
+        ! print *,"nu: ", nu_air(T_environment)
+        ! print *,"diameter: ", diameter
+        ! print *,"Reynolds: ", Re
+    END FUNCTION
+
+    ! Calculate Schmidt number [dimensionless]
+    FUNCTION Sc(T_environment, T_particle)
+        ! Temperature of environment and particle [K]
+        DOUBLE PRECISION, INTENT(IN) :: T_environment, T_particle
+        ! Schmidt number
+        DOUBLE PRECISION :: Sc
+
+        ! Froessling Equation
+        Sc = nu_air(T_environment)/D_Coeff(T_particle, T_environment)
+        !print *,"Schmidt: ",Sc
+    END FUNCTION
+
+    ! Calculate mass transfer coefficient [µm/s]
+    FUNCTION h_m(diameter, T_environment, T_particle, velocity)
+        ! Temperature of environment and particle [K]
+        DOUBLE PRECISION, INTENT(IN) :: T_environment, T_particle
+        ! Velocity of particle [m/s]
+        DOUBLE PRECISION, INTENT(IN) :: velocity
+        ! Diameter of particle [µm]
+        DOUBLE PRECISION, INTENT(IN) :: diameter
+        ! Mass Transfer Coefficient [µm/s]
+        DOUBLE PRECISION :: h_m
+
+        h_m = D_Coeff(T_particle, T_environment)*sys_con/diameter*Sh(velocity, diameter, T_environment, T_particle) 
+        !print *,"h_m: ",h_m
+        !print *,""
+    END FUNCTION
+
+    ! 1st Order Derivative of particle diameter [µm/s]
     FUNCTION dddt(y, params, params_dim, alg_dim)
         INTEGER, INTENT(IN) :: alg_dim
         INTEGER, INTENT(IN) :: params_dim
@@ -125,9 +173,11 @@ CONTAINS
         velocity = params(3)
         humidity = params(4)
 
+        !print *,"y: ",y
         ! Calculation
-        dddt = 2/(rho_H20)*h_m(y, T_environment, T_particle, velocity, alg_dim)*M_H2O/R*(pw_H2O(T_particle)/T_particle &
+        dddt(1) = - 2/(rho_H20)*h_m(y(1), T_environment, T_particle, velocity)*M_H2O/R*(pw_H2O(T_particle)/T_particle &
             - pinf_H2O(T_environment, humidity)/T_environment)
+        !print *,"dddt: ",dddt(1)
     END FUNCTION
 
 END MODULE module_evaporation

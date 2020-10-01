@@ -57,7 +57,7 @@ CONTAINS
         INTEGER :: idx
         num_of_particles = SIZE(particles, DIM=1) 
 
-        !$omp PARALLEL DO 
+        !!$omp PARALLEL DO 
         do idx = 1, num_of_particles
             IF (particles(idx)%active .eqv. .TRUE.) THEN
                 call evaluate_evaporation(numeric_integration_procedure_evaporation, particles(idx), dt)
@@ -65,7 +65,7 @@ CONTAINS
                 particles(idx)%time_elapsed = particles(idx)%time_elapsed + dt 
             END IF
         end do
-        !$omp END PARALLEL DO
+        !!$omp END PARALLEL DO
     END SUBROUTINE
 
     FUNCTION output(start_idx, end_idx)

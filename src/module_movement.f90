@@ -29,17 +29,21 @@ CONTAINS
         params(1) = prtcl%f(1)
         params(2) = prtcl%f(2)
         params(3) = prtcl%f(3)
-        params(4) = mass_core(prtcl) + mass_shell(prtcl)
+        ! Convert mass from femtogram to kg (10¹⁸)
+        params(4) = (mass_core(prtcl) + mass_shell(prtcl))/(sys_con*sqrt(sys_con))
 
         ! Update Key Value
         call numeric_integration_procedure(dydt, y, dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
 
-        ! Assign result to particle
-        prtcl%r = y(1:SIZE(y, DIM=1)/2)
-        prtcl%v = y(SIZE(y, DIM=1)/2+1:)
+        ! Store Changes
+        prtcl%r = y(1:(2*dim)/2)
+        prtcl%v = y((2*dim)/2+1:)
 
+        ! Verify Changes
+        call verify_status(prtcl)
     END SUBROUTINE
 
+    ! Change of status variable
     FUNCTION dydt(y, params, params_dim, alg_dim)
         INTEGER, INTENT(IN) :: alg_dim
         INTEGER, INTENT(IN) :: params_dim
@@ -48,16 +52,18 @@ CONTAINS
         DOUBLE PRECISION, DIMENSION(alg_dim) :: dydt
 
         ! Resolve params (Individually)
-        DOUBLE PRECISION, DIMENSION(alg_dim) :: force
+        DOUBLE PRECISION :: f_x
+        DOUBLE PRECISION :: f_y
+        DOUBLE PRECISION :: f_z
         DOUBLE PRECISION :: mass 
 
-        force(1) = params(1)
-        force(2) = params(2)
-        force(3) = params(3)
+        f_x = params(1)
+        f_y = params(2)
+        f_z = params(3)
         mass = params(4)
 
         dydt(1:alg_dim/2) = y(alg_dim/2+1:)
-        dydt(alg_dim/2+1:) = force/mass
+        dydt(alg_dim/2+1:) = (/ f_x/mass, f_y/mass, f_z/mass /)
     END FUNCTION
 
 END MODULE module_movement

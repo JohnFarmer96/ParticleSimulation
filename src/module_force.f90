@@ -29,31 +29,31 @@ CONTAINS
         prtcl%f = 0
     END SUBROUTINE
 
-    ! Calculate gravitational force
+    ! Calculate gravitational force [N]
     SUBROUTINE gravitation(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
 
-        ! Newton Law
-        prtcl%f = prtcl%f + (mass_core(prtcl) + mass_shell(prtcl))*g
+        ! Newton Law (Convert mass from femtogramm to kg)
+        prtcl%f = prtcl%f + (mass_core(prtcl) + mass_shell(prtcl))/(sys_con*sqrt(sys_con))*g
     END SUBROUTINE
 
-    ! Calculate air resistance force
+    ! Calculate air resistance force [N]
     SUBROUTINE air_resistance(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
 
-        ! Stokes Law
-        prtcl%f = prtcl%f + 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)
+        ! Stokes Law (convert shell diameter from µm to m)
+        prtcl%f = prtcl%f + 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/(2*sqrt(sys_con)))*prtcl%v*(-1)
     END SUBROUTINE
 
-    ! Calculate wind force
+    ! Calculate wind force [N]
     SUBROUTINE wind(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
 
-        ! Wind Force on particle
-        prtcl%f = prtcl%f + rho_air(prtcl%T_environment)/2*prtcl%v_wind*((prtcl%d_shell/2)**2*PI)
+        ! Wind Force on particle (convert shell diameter from µm to m)
+        prtcl%f = prtcl%f + rho_air(prtcl%T_environment)/2*prtcl%v_wind*((prtcl%d_shell/(2*sqrt(sys_con)))**2*PI)
     END SUBROUTINE
 
 END MODULE module_force

@@ -17,15 +17,15 @@ MODULE module_parameters
     DOUBLE PRECISION, PARAMETER :: p_atm = 101325
 
     ! Molar Mass (Water) [kg/mol]
-    DOUBLE PRECISION, PARAMETER :: M_H2O = 18.01538/1000.0
+    DOUBLE PRECISION, PARAMETER :: M_H2O = 18.01538/1000.d0
 
     ! Molar Mass (Dry Air) [kg/mol]
-    DOUBLE PRECISION, PARAMETER :: M_air = 28.9644/1000.0
+    DOUBLE PRECISION, PARAMETER :: M_air = 28.9644/1000.d0
     
-    ! Density of Water [kg/m³]
+    ! Density of Water [kg/m³] [fg/µm³]
     DOUBLE PRECISION, PARAMETER :: rho_H20 = 1000
 
-    ! Density of SARS-CoV-2 [kg/m³]
+    ! Density of SARS-CoV-2 [kg/m³] [fg/µm³]
     DOUBLE PRECISION, PARAMETER :: rho_cov2 = 1000
 
     ! Base Diffusion Coefficient at 0°C [m²/s]
@@ -57,13 +57,16 @@ MODULE module_parameters
     ! ========================================================
 
     ! Maximum Velocity of Particles when sneezing [m/s]
-    DOUBLE PRECISION, PARAMETER :: sneeze_vel = 48
+    DOUBLE PRECISION, PARAMETER :: sneeze_vel = 44
+
+    ! Unit conversion
+    DOUBLE PRECISION, PARAMETER :: sys_con = 1000000000000.d0
 
     ! ========================================================
 
 CONTAINS
 
-    ! Density of Air [kg/m³]
+    ! Density of Air [kg/m³] [fg/µm³]
     FUNCTION rho_air(T_environment)
         ! Temperature ov environment [K]
         DOUBLE PRECISION, INTENT(IN) :: T_environment
@@ -74,7 +77,7 @@ CONTAINS
         rho_air = p_atm*M_air/(R*T_environment)
     END FUNCTION
 
-    ! Kinematic Viscosity [m²/s]
+    ! Kinematic Viscosity [m²/s = µm²/s * 10¹²]
     FUNCTION nu_air(T_environment)
         ! Temperature ov environment [K]
         DOUBLE PRECISION, INTENT(IN) :: T_environment
@@ -85,7 +88,7 @@ CONTAINS
         nu_air = etha_air(T_environment)/rho_air(T_environment)
     END FUNCTION
 
-    ! Dynamic viscosity [Pa⋅s = kg/(m⋅s)] (Interpolation)
+    ! Dynamic viscosity [Pa⋅s = kg/(m⋅s) = fg/(µm*s)*10¹²] (Interpolation)
     ! Source: https://www.engineersedge.com/physics/viscosity_of_air_dynamic_and_kinematic_14483.htm
     FUNCTION etha_air(T_environment)
         ! Temperature ov environment [K]
@@ -94,8 +97,8 @@ CONTAINS
         DOUBLE PRECISION :: etha_air
 
         ! Parameters
-        DOUBLE PRECISION, PARAMETER :: offset = 1.338/100000
-        DOUBLE PRECISION, PARAMETER :: gradient = 0.968/100000/100
+        DOUBLE PRECISION, PARAMETER :: offset = 1.338/100000.d0
+        DOUBLE PRECISION, PARAMETER :: gradient = 0.968/10000000.d0
 
         ! Linear Interpolation (acc. to graph in source)
         etha_air = gradient*(T_environment - T_0) + offset

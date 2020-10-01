@@ -11,6 +11,7 @@ CONTAINS
 
         DOUBLE PRECISION :: buffer
 
+        buffer = 0.d0
         ! x-Direction [-0.5...0.5]
         call RANDOM_NUMBER(buffer)
         prtcl%r(1) = (buffer-0.5)
@@ -52,13 +53,13 @@ CONTAINS
         TYPE(particle), INTENT(INOUT) :: prtcl
         
         DOUBLE PRECISION :: buffer
-        ! Assign diameter of core [10nm...1000nm] and convert to [m]
+        ! Assign diameter of core [10nm...1000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_core = (10 + 990*buffer)/1000000000 
+        prtcl%d_core = (10 + 990*buffer)/1000.d0
 
-        ! Assign diameter of shell [d_core...10µm = 10.000nm] and convert to [m]
+        ! Assign diameter of shell [d_core...10µm = 5.000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_shell = prtcl%d_core + 9000*buffer/1000000000
+        prtcl%d_shell = prtcl%d_core + 4000*buffer/1000.d0
 
         ! Assign temperature of particle [between 20 and 35 °C] and convert to [K]
         call RANDOM_NUMBER(buffer)
@@ -80,6 +81,7 @@ CONTAINS
         prtcl%T_environment = T_environment
         prtcl%humidity = humidity
         prtcl%time_elapsed = 0
+        prtcl%f = 0
     END SUBROUTINE
 
 END MODULE module_init

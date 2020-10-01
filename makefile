@@ -14,7 +14,7 @@ MODS = module_parameters.f90 module_particle.f90 module_init.f90 numeric_integra
 # Liste der MKL-Dateien (geordnet)
 MKLS = # ? mkl_blas.f90 blas.f90
 # Name des Compilers
-FC = ifort
+FC = gfortran
 # Compilieroptionen beim Übersetzen
 FLAGS = -O2
 # Bibliotheken
