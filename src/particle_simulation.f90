@@ -71,7 +71,7 @@ CONTAINS
     FUNCTION output(start_idx, end_idx)
         INTEGER, INTENT(IN) :: start_idx
         INTEGER, INTENT(IN) :: end_idx
-        INTEGER, PARAMETER :: num_of_properties = 21
+        INTEGER, PARAMETER :: num_of_properties = 23
         DOUBLE PRECISION, DIMENSION(end_idx-start_idx + 1, num_of_properties) :: output
 
         INTEGER :: idx_particles, idx_array
@@ -107,14 +107,18 @@ CONTAINS
             output(idx_array, 15) = particles(idx_particles)%v_wind(2)
             output(idx_array, 16) = particles(idx_particles)%v_wind(3)
 
+            ! Output mass
+            output(idx_array, 17) = mass_core(particles(idx_particles))
+            output(idx_array, 18) = mass_shell(particles(idx_particles))
+
             ! Output acting force
-            output(idx_array, 17) = particles(idx_particles)%f(1)
-            output(idx_array, 18) = particles(idx_particles)%f(2)
-            output(idx_array, 19) = particles(idx_particles)%f(3)
+            output(idx_array, 19) = particles(idx_particles)%f(1)
+            output(idx_array, 20) = particles(idx_particles)%f(2)
+            output(idx_array, 21) = particles(idx_particles)%f(3)
 
             ! Output status variables
-            output(idx_array, 20) = MERGE(1.d0, 0.d0, particles(idx_particles)%core_only)
-            output(idx_array, 21) = MERGE(1.d0, 0.d0, particles(idx_particles)%active)
+            output(idx_array, 22) = MERGE(1.d0, 0.d0, particles(idx_particles)%core_only)
+            output(idx_array, 23) = MERGE(1.d0, 0.d0, particles(idx_particles)%active)
         end do 
         !$omp END PARALLEL DO
     END FUNCTION

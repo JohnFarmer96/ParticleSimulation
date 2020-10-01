@@ -96,7 +96,7 @@ CONTAINS
         DOUBLE PRECISION :: vol_shell
 
         ! Calculation
-        vol_shell = ((prtcl%d_shell/2)**3)*PI*4/3 - vol_core(prtcl)
+        vol_shell = ((prtcl%d_shell/2)**3 - (prtcl%d_core/2)**3)*PI*4/3
     END FUNCTION
 
     ! Verify if particle shell is completely evaporated

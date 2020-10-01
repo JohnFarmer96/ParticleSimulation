@@ -74,7 +74,7 @@ CONTAINS
         rho_air = p_atm*M_air/(R*T_environment)
     END FUNCTION
 
-    ! Kinematic Viscosity [m²/s = µm²/s * 10¹²]
+    ! Kinematic Viscosity [m²/s]
     FUNCTION nu_air(T_environment)
         ! Temperature ov environment [K]
         DOUBLE PRECISION, INTENT(IN) :: T_environment
@@ -85,7 +85,7 @@ CONTAINS
         nu_air = etha_air(T_environment)/rho_air(T_environment)
     END FUNCTION
 
-    ! Dynamic viscosity [Pa⋅s = kg/(m⋅s) = fg/(µm*s)*10¹²] (Interpolation)
+    ! Dynamic viscosity [Pa⋅s = kg/(m⋅s)] (Interpolation)
     ! Source: https://www.engineersedge.com/physics/viscosity_of_air_dynamic_and_kinematic_14483.htm
     FUNCTION etha_air(T_environment)
         ! Temperature ov environment [K]
@@ -94,8 +94,8 @@ CONTAINS
         DOUBLE PRECISION :: etha_air
 
         ! Parameters
-        DOUBLE PRECISION, PARAMETER :: offset = 1.338/100000.d0
-        DOUBLE PRECISION, PARAMETER :: gradient = 0.968/10000000.d0
+        DOUBLE PRECISION, PARAMETER :: offset = 1.338*10.0E-5
+        DOUBLE PRECISION, PARAMETER :: gradient = 0.968*10.0E-7 ![Pa*s/K]
 
         ! Linear Interpolation (acc. to graph in source)
         etha_air = gradient*(T_environment - T_0) + offset

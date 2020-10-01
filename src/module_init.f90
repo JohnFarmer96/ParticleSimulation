@@ -52,7 +52,7 @@ CONTAINS
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
         ! Conversion factor [nm to mm]
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-3
+        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-4
         
         DOUBLE PRECISION :: buffer
         ! Assign diameter of core [10nm...1000nm] and convert to [µm]

@@ -8,7 +8,7 @@ PROGRAM test
     ! Relative Path to Result files (Extension needs to be added)
     CHARACTER(LEN=128), PARAMETER :: base_path = 'data/particle_simulation_result_'
     ! Hard Coded Number of Variables that are present in output data array
-    INTEGER, PARAMETER :: num_of_variables = 21
+    INTEGER, PARAMETER :: num_of_variables = 23
 
     ! CONFIG-PARAMETERS
     ! ==============================================================
@@ -37,7 +37,7 @@ PROGRAM test
 
     ! Read Parameters & Apply Configuration
     call read_config(TRIM(config_file))
-    ALLOCATE(data_array(concentration, 21))
+    ALLOCATE(data_array(concentration, num_of_variables))
     print *,"Preparation Completed"
 
     ! Initialize Particles
@@ -60,6 +60,10 @@ PROGRAM test
         call write_to_file(base_path, n_cur)
     end do
     print *,"Simulation Completed"
+
+    ! ! Write result
+    ! data_array = output(start_idx=1, end_idx=concentration)
+    ! call write_to_file(base_path, n_cur)
 
     ! Print Success
     print *,"Program Done"
@@ -122,8 +126,12 @@ CONTAINS
         CHARACTER(LEN=128) :: filename_suffix 
         CHARACTER(LEN=20) :: FMT
 
-        WRITE(FMT,'("(I", I0, ")")') INT(n_current/10)+1
-        write (filename_suffix, FMT) n_current
+        IF (n_current .GT. 0) THEN
+            WRITE(FMT,'("(I", I0, ")")') INT(LOG10(REAL(n_current))+1)
+            WRITE (filename_suffix, FMT) n_current
+        ELSE 
+            WRITE(filename_suffix, '(I1)') 0
+        END IF
 
         filename = TRIM(filename_base)//TRIM(filename_suffix)//'.dat'
 
@@ -135,9 +143,12 @@ CONTAINS
             STOP
         end if 
 
+        ! Write out Headline
+        WRITE (unit_no, '(23(a14))') "idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
+        "d_shell","T_par","T_env","humid","vw_x","vw_y","vw_z","m_c","m_s","f_x","f_y","f_z","core","active" 
         ! Write out Variables
         do idx = 1, concentration
-            write(unit_no, '(21(g14.7))') data_array(idx,:)
+            write(unit_no, '(23(g14.7))') data_array(idx,:)
         end do
 
         ! Close File Before Ending
@@ -149,7 +160,7 @@ CONTAINS
         DOUBLE PRECISION, DIMENSION(concentration, num_of_variables), INTENT(IN) :: array
         INTEGER :: idx
 
-        print '(21(a14))',"idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
+        print '(23(a14))',"idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
             "d_shell","T_par","T_env","humid","vw_x","vw_y","vw_z","f_x","f_y","f_z","core","active" 
         do idx = 1, concentration
             print '(21(g14.6))', array(idx,:)

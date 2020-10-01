@@ -59,7 +59,7 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-3
 
         ! Wind Force on particle 
-        prtcl%f = prtcl%f + rho_air(prtcl%T_environment)/2*prtcl%v_wind*((prtcl%d_shell/2)**2*PI)*conversion
+        prtcl%f = prtcl%f + rho_air(prtcl%T_environment)/2*(prtcl%v_wind)**2*((prtcl%d_shell/2)**2*PI)*conversion
     END SUBROUTINE
 
 END MODULE module_force

@@ -1,9 +1,9 @@
-10          :: concentration
+30          :: concentration
 0.1         :: intensity
 0.01        :: dt
-0.1          :: t_total
+0.05         :: t_total
 1           :: v_wind_x
 0           :: v_wind_y
 0           :: v_wind_z
 0.1         :: humidity
-30          :: T_environment
+300         :: T_environment
