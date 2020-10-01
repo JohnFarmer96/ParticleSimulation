@@ -3,48 +3,159 @@ PROGRAM test
     USE particle_simulation
     IMPLICIT NONE
 
+    ! Relative Path to Configuration file
+    CHARACTER(LEN=128), PARAMETER :: config_file = 'data/config.d'
+    ! Relative Path to Result files (Extension needs to be added)
+    CHARACTER(LEN=128), PARAMETER :: base_path = 'data/particle_simulation_result_'
+    ! Hard Coded Number of Variables that are present in output data array
+    INTEGER, PARAMETER :: num_of_variables = 21
+
+    ! CONFIG-PARAMETERS
+    ! ==============================================================
     ! Particle concentration in the air [x/m³] (0...30.000)
-    INTEGER, PARAMETER :: concentration = 10
+    INTEGER :: concentration
     ! Intensity coefficient [%] (0...1) 
-    DOUBLE PRECISION, PARAMETER :: intensity = 0.1
+    DOUBLE PRECISION :: intensity
     ! Velocity of Wind [m/s]
-    DOUBLE PRECISION, DIMENSION(dim), PARAMETER :: v_wind = (/1.d0,0.d0,0.d0/)
+    DOUBLE PRECISION, DIMENSION(dim) :: v_wind
     ! Temperature of environment [K]
-    DOUBLE PRECISION, PARAMETER :: T_environment = 300
+    DOUBLE PRECISION :: T_environment
     ! Relative Humidity in environment [%] (0...1)
-    DOUBLE PRECISION, PARAMETER :: humidity = 0.1
+    DOUBLE PRECISION :: humidity
     ! Stepwidth [s]
-    DOUBLE PRECISION, PARAMETER :: dt = 0.01
+    DOUBLE PRECISION :: dt
+    ! Total Simulation Time [s]
+    DOUBLE PRECISION :: t_total
+    ! ==============================================================
 
     ! Data Array 
-    DOUBLE PRECISION, DIMENSION(concentration, 21) :: data_array
+    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: data_array
     ! Number of Iterations
     INTEGER :: n, niter
 
-    ! Initialize
+    print *,"Started" 
+
+    ! Read Parameters & Apply Configuration
+    call read_config(TRIM(config_file))
+    ALLOCATE(data_array(concentration, 21))
+    print *,"Preparation Completed"
+
+    ! Initialize Particles
+    n = 0
     call initialize(concentration, intensity, T_environment, humidity, v_wind)
-    data_array = output(start_idx=1, end_idx=concentration)
-    call print_output(data_array)
+    print *,"Initialization Complete"
 
-    ! Update
-    niter = 1000
+    ! Save initial configuration
+    data_array = output(start_idx=1, end_idx=concentration)
+    call write_to_file(base_path, n)
+    
+    ! Execute Simulation
+    niter = INT(t_total/dt)
+    print *,"Simulation Started"
     do n = 1, niter
-        call update(euler, runge_kutta_4k, dt)
+        call update(euler, euler, dt)
     end do
+    print *,"Simulation Completed"
 
+    ! Write result
     data_array = output(start_idx=1, end_idx=concentration)
-    call print_output(data_array)
+    call write_to_file(base_path, n)
+
+    ! Print Success
+    print *,"Done"
 
 CONTAINS 
 
+    ! Read in parameter configuration
+    SUBROUTINE read_config(filename)
+        ! Dummy Arguments
+        CHARACTER(len=*), INTENT(IN) :: filename
+        INTEGER :: ios, unit_no 
+
+        ! Open Textfile & Verify Success
+        OPEN(newunit=unit_no, file=TRIM(filename), status='unknown', IOSTAT=ios)
+        if (ios /= 0) then
+            print *, "Cannot Open File. IO-Status-Variable Value:", ios
+            STOP
+        end if
+
+        ! Read in process variables
+        read (unit_no,*) concentration
+        print *,"Concentration: ",concentration
+
+        read (unit_no,*) intensity
+        print *,"Intensity: ",intensity
+
+        read (unit_no,*) dt
+        print *,"Stepwidth: ",dt
+
+        read (unit_no,*) t_total
+        print *,"Total Time: ",t_total
+
+        read (unit_no,*) v_wind(1)
+        print *,"Velocity of Wind (x): ",v_wind(1)
+        
+        read (unit_no,*) v_wind(2)
+        print *,"Velocity of Wind (y): ",v_wind(2)
+
+        read (unit_no,*) v_wind(3)
+        print *,"Velocity of Wind (z): ",v_wind(3)
+
+        read (unit_no,*) humidity
+        print *,"Humidity: ",humidity
+
+        read (unit_no,*) T_environment
+        print *,"Temperature of Environment ",T_environment
+
+        ! Close File Before Ending
+        CLOSE(unit_no)
+    END SUBROUTINE
+
+    ! Write data to file
+    SUBROUTINE write_to_file(filename_base, n_current)
+        CHARACTER(len=*), INTENT(IN) :: filename_base
+        INTEGER, INTENT(IN) :: n_current
+        INTEGER :: idx, ios, unit_no 
+
+        ! Adapt filename
+        CHARACTER(LEN=128) :: filename
+        CHARACTER :: iteration_state 
+
+        IF (n_current .GT. 0) THEN
+            iteration_state = '1'
+        ELSE
+            iteration_state = '0'
+        END IF
+
+        filename = TRIM(filename_base)//iteration_state//'.dat'
+
+        print *,"Writing at: "//filename
+        ! Open Textfile & Verify Success
+        OPEN(newunit=unit_no, file=TRIM(filename), status='replace', IOSTAT=ios)
+        if (ios /= 0) then
+            print *, "Cannot Open File. IO-Status-Variable Value:", ios
+            STOP
+        end if 
+
+        ! Write out Variables
+        do idx = 1, concentration
+            write(unit_no, '(21(g14.7))') data_array(idx,:)
+        end do
+
+        ! Close File Before Ending
+        CLOSE(unit_no)
+    END SUBROUTINE
+
+    ! Print output to console
     SUBROUTINE print_output(array)
-        DOUBLE PRECISION, DIMENSION(concentration, 21), INTENT(IN) :: array
+        DOUBLE PRECISION, DIMENSION(concentration, num_of_variables), INTENT(IN) :: array
         INTEGER :: idx
 
         print '(21(a14))',"idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
             "d_shell","T_par","T_env","humid","vw_x","vw_y","vw_z","f_x","f_y","f_z","core","active" 
-        do idx = 1, SIZE(array, DIM=1) 
+        do idx = 1, concentration
             print '(21(g14.6))', array(idx,:)
         end do
     END SUBROUTINE
+
 END PROGRAM

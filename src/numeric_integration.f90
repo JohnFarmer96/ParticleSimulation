@@ -2,7 +2,7 @@ MODULE numeric_integration
     IMPLICIT NONE
     
     ! Generic Function Interface
-    ABSTRACT INTERFACE 
+    INTERFACE 
         FUNCTION func(y, params, params_dim, alg_dim) result(dydx)
             INTEGER, INTENT(IN) :: alg_dim
             INTEGER, INTENT(IN) :: params_dim
