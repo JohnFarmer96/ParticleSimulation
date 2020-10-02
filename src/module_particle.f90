@@ -7,6 +7,7 @@ MODULE module_particle
     PUBLIC :: mass_core
     PUBLIC :: verify_status
     PUBLIC :: verify_shell
+    PUBLIC :: set_dt
     PRIVATE :: vol_core
     PRIVATE :: vol_shell
 
@@ -47,6 +48,9 @@ MODULE module_particle
 
         ! Relative Humidity in environment [%]
         DOUBLE PRECISION :: humidity
+
+        ! Individual Stepwidth
+        DOUBLE PRECISION :: dt
 
     END TYPE particle
     
@@ -132,6 +136,29 @@ CONTAINS
             prtcl%r(3) = 0
         ELSE
             prtcl%active = .TRUE.
+        END IF
+    END SUBROUTINE
+
+    SUBROUTINE set_dt(prtcl, f_r)
+        ! Desired particle
+        TYPE(particle), INTENT(INOUT) :: prtcl
+        ! Air resistance force [µN]
+        DOUBLE PRECISION, INTENT(IN) :: f_r
+        ! Max change of acceleration [m/s]
+        DOUBLE PRECISION, PARAMETER :: boundary = 5E-4
+        ! Conversion Factor
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E-9
+
+        ! Local parameters
+        DOUBLE PRECISION :: dt1, dt2
+
+        dt1 = boundary * (mass_core(prtcl) + mass_shell(prtcl))/f_r*conversion
+        dt2 = prtcl%d_shell/(200*v_euclid(prtcl))
+
+        IF(dt1 .ge. dt2) THEN
+            prtcl%dt = dt2
+        ELSE
+            prtcl%dt = dt1
         END IF
     END SUBROUTINE
     

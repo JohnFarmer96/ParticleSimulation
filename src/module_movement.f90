@@ -35,7 +35,7 @@ CONTAINS
         params(4) = (mass_core(prtcl) + mass_shell(prtcl)) ![fg]
 
         ! Update Key Value
-        call numeric_integration_procedure(dydt, y, dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
+        call numeric_integration_procedure(dydt, y, prtcl%dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
 
         ! Store Changes
         prtcl%r = y(1:(2*dim)/2)

@@ -60,13 +60,13 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 1E-3
         
         DOUBLE PRECISION :: buffer
-        ! Assign diameter of core [100nm...1000nm] and convert to [µm]
+        ! Assign diameter of core [50nm...10.000nm = 10µm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_core = (50 + 950*buffer)*conversion
+        prtcl%d_core = (50 + 9950*buffer)*conversion
 
-        ! Assign diameter of shell [d_core...5µm = 5.000nm] and convert to [µm]
+        ! Assign diameter of shell [d_core...10µm = 1000µm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_shell = prtcl%d_core + 4000*buffer*conversion
+        prtcl%d_shell = prtcl%d_core + 999000*buffer*conversion
 
         ! Assign temperature of particle [between 20 and 35 °C] and convert to [K]
         call RANDOM_NUMBER(buffer)

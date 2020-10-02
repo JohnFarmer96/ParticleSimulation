@@ -54,10 +54,16 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 1E3
         ! Cunningham Correction (dimensionless)
         DOUBLE PRECISION :: ccorr
+        ! Air Resistance Force Vector (Automatic stepwidth)
+        DOUBLE PRECISION, DIMENSION(dim) :: f_r
+
 
         ! Stokes Law and Cunningham Correction (particles very small)
         ccorr = 1+1.63*0.068/prtcl%d_shell
-        prtcl%f = prtcl%f + 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)*conversion/ccorr
+        f_r = 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)*conversion/ccorr
+        prtcl%f = prtcl%f + f_r
+
+        call set_dt(prtcl, sqrt(sum(f_r**2)))
     END SUBROUTINE
 
     ! Calculate wind force [µN = µg*m/s²]

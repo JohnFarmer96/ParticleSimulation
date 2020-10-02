@@ -165,7 +165,7 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 1E12
 
         h_m = D_Coeff(T_particle, T_environment)/diameter*Sh(velocity, diameter, T_environment, T_particle)*conversion
-        print *,"h_m: ",h_m
+        !print *,"h_m: ",h_m
         !print *,""
     END FUNCTION
 

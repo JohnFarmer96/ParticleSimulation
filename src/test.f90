@@ -51,19 +51,18 @@ PROGRAM test
     print *,"Initialization Saved"
     
     ! Execute Simulation
-    n_iter = INT(t_total/dt)
+    n_iter = 1000000
     print *,"Simulation Started"
     do n_cur = 1, n_iter
         call update(euler, euler, dt)
-        ! Write result
-        data_array = output(start_idx=1, end_idx=concentration)
-        call write_to_file(base_path, n_cur)
+
+        IF(MODULO(n_cur, 100000) .eq. 0) THEN
+            ! Write result
+            data_array = output(start_idx=1, end_idx=concentration)
+            call write_to_file(base_path, n_cur)
+        END IF
     end do
     print *,"Simulation Completed"
-
-    ! ! Write result
-    ! data_array = output(start_idx=1, end_idx=concentration)
-    ! call write_to_file(base_path, n_cur)
 
     ! Print Success
     print *,"Program Done"

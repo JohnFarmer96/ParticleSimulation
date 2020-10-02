@@ -64,12 +64,14 @@ CONTAINS
         !$omp PARALLEL DO 
         do idx = 1, num_of_particles
             IF (particles(idx)%active .eqv. .TRUE.) THEN
-                call evaluate_evaporation(numeric_integration_procedure_evaporation, particles(idx), dt)
                 call evaluate_movement(numeric_integration_procedure_movement, particles(idx), dt)
-                particles(idx)%time_elapsed = particles(idx)%time_elapsed + dt 
+                call evaluate_evaporation(numeric_integration_procedure_evaporation, particles(idx), dt)
+                particles(idx)%time_elapsed = particles(idx)%time_elapsed + particles(idx)%dt
             END IF
         end do
         !$omp END PARALLEL DO
+
+        print *,"Elapsed time: ",particles(1)%time_elapsed
     END SUBROUTINE
 
     FUNCTION output(start_idx, end_idx)
