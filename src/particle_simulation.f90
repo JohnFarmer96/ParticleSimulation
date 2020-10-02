@@ -8,6 +8,10 @@ MODULE particle_simulation
     USE omp_lib
     IMPLICIT NONE
 
+    PUBLIC :: initialize
+    PUBLIC :: update
+    PUBLIC :: output
+    
     ! List of particles in simulation
     TYPE(particle), DIMENSION(:), ALLOCATABLE :: particles
 

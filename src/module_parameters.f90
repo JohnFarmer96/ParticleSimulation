@@ -1,6 +1,10 @@
 MODULE module_parameters
     IMPLICIT NONE
 
+    PUBLIC :: rho_air 
+    PUBLIC :: nu_air 
+    PUBLIC :: etha_air
+
     ! Dimension of Simulation
     INTEGER, PARAMETER :: dim = 3
 
@@ -17,10 +21,10 @@ MODULE module_parameters
     DOUBLE PRECISION, PARAMETER :: p_atm = 101325
 
     ! Molar Mass (Water) [kg/mol]
-    DOUBLE PRECISION, PARAMETER :: M_H2O = 18.01538/1000.d0
+    DOUBLE PRECISION, PARAMETER :: M_H2O = 18.01538*1E-3
 
     ! Molar Mass (Dry Air) [kg/mol]
-    DOUBLE PRECISION, PARAMETER :: M_air = 28.9644/1000.d0
+    DOUBLE PRECISION, PARAMETER :: M_air = 28.9644*1E-3
     
     ! Density of Water [kg/m³] [fg/µm³]
     DOUBLE PRECISION, PARAMETER :: rho_H20 = 1000
@@ -29,7 +33,7 @@ MODULE module_parameters
     DOUBLE PRECISION, PARAMETER :: rho_cov2 = 1000
 
     ! Base Diffusion Coefficient at 0°C [m²/s]
-    DOUBLE PRECISION, PARAMETER :: D_0 = 2.3/100000.0
+    DOUBLE PRECISION, PARAMETER :: D_0 = 2.3*1E-5
     ! Corresponding Temperature T_0 at 0°C [K]
     DOUBLE PRECISION, PARAMETER :: T_0 = 273.15
 
@@ -94,8 +98,8 @@ CONTAINS
         DOUBLE PRECISION :: etha_air
 
         ! Parameters
-        DOUBLE PRECISION, PARAMETER :: offset = 1.338*10.0E-5
-        DOUBLE PRECISION, PARAMETER :: gradient = 0.968*10.0E-7 ![Pa*s/K]
+        DOUBLE PRECISION, PARAMETER :: offset = 1.338*1E-5
+        DOUBLE PRECISION, PARAMETER :: gradient = 0.968*1E-7 ![Pa*s/K]
 
         ! Linear Interpolation (acc. to graph in source)
         etha_air = gradient*(T_environment - T_0) + offset

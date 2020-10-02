@@ -5,6 +5,9 @@ MODULE module_movement
     USE numeric_integration
     IMPLICIT NONE
 
+    PUBLIC :: evaluate_movement
+    PRIVATE :: dydt
+
 CONTAINS
 
     ! Update Particle Movement [location: m, velocity: m/s, acceleration: m/s²]
@@ -51,7 +54,7 @@ CONTAINS
         DOUBLE PRECISION, DIMENSION(alg_dim) :: dydt
 
         ! Conversion factor for acceleration 
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E9
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E9
 
         ! Resolve params (Individually)
         DOUBLE PRECISION :: f_x
@@ -66,7 +69,7 @@ CONTAINS
         mass = params(4)
 
         dydt(1:alg_dim/2) = y(alg_dim/2+1:)
-        dydt(alg_dim/2+1:) = (/ f_x/mass*conversion, f_y/mass*conversion, f_z/mass*conversion /)
+        dydt(alg_dim/2+1:) = (/ f_x/mass*conversion, f_y/mass*conversion, f_z/mass*conversion/)
     END FUNCTION
 
 END MODULE module_movement

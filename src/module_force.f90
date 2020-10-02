@@ -3,6 +3,12 @@ MODULE module_force
     USE module_particle
     IMPLICIT NONE
 
+    PUBLIC :: evaluate_force
+    PRIVATE :: reset
+    PRIVATE :: gravitation
+    PRIVATE :: air_resistance
+    PRIVATE :: wind
+    
 CONTAINS
 
     ! Update Acting Force on Particle (required in each step) [µN = µg*m/s²]
@@ -34,7 +40,7 @@ CONTAINS
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
         ! Conversion factor (fg to µg)
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-9
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E-9
 
         ! Newton Law 
         prtcl%f = prtcl%f + (mass_core(prtcl) + mass_shell(prtcl))*g*conversion
@@ -44,11 +50,14 @@ CONTAINS
     SUBROUTINE air_resistance(prtcl)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
-        !Conversion factor (kg to µg and µm to m)
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E3
+        ! Conversion factor (kg to µg and µm to m)
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E3
+        ! Cunningham Correction (dimensionless)
+        DOUBLE PRECISION :: ccorr
 
-        ! Stokes Law
-        prtcl%f = prtcl%f + 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)
+        ! Stokes Law and Cunningham Correction (particles very small)
+        ccorr = 1+1.63*0.068/prtcl%d_shell
+        prtcl%f = prtcl%f + 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)*conversion/ccorr
     END SUBROUTINE
 
     ! Calculate wind force [µN = µg*m/s²]
@@ -56,7 +65,7 @@ CONTAINS
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
         ! Conversion factor (kg to µg and µm to m)
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-3
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E-3
 
         ! Wind Force on particle 
         prtcl%f = prtcl%f + rho_air(prtcl%T_environment)/2*(prtcl%v_wind)**2*((prtcl%d_shell/2)**2*PI)*conversion

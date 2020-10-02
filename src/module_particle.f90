@@ -2,6 +2,14 @@ MODULE module_particle
     USE module_parameters
     IMPLICIT NONE
 
+    PUBLIC :: v_euclid
+    PUBLIC :: mass_shell
+    PUBLIC :: mass_core
+    PUBLIC :: verify_status
+    PUBLIC :: verify_shell
+    PRIVATE :: vol_core
+    PRIVATE :: vol_shell
+
     ! Custom Datatype for Particle-Simulation
     TYPE particle
         ! Current Position [m]

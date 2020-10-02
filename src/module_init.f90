@@ -2,6 +2,11 @@ MODULE module_init
     USE module_particle
     IMPLICIT NONE
 
+    PUBLIC :: initialize_circumstances
+    PUBLIC :: initialize_position
+    PUBLIC :: initialize_velocity 
+    PUBLIC :: initialize_structure
+    
 CONTAINS
 
     ! Initialize position of particles
@@ -52,14 +57,14 @@ CONTAINS
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
         ! Conversion factor [nm to mm]
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-4
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E-3
         
         DOUBLE PRECISION :: buffer
-        ! Assign diameter of core [10nm...1000nm] and convert to [µm]
+        ! Assign diameter of core [100nm...1000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_core = (10 + 990*buffer)*conversion
+        prtcl%d_core = (50 + 950*buffer)*conversion
 
-        ! Assign diameter of shell [d_core...10µm = 5.000nm] and convert to [µm]
+        ! Assign diameter of shell [d_core...5µm = 5.000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
         prtcl%d_shell = prtcl%d_core + 4000*buffer*conversion
 

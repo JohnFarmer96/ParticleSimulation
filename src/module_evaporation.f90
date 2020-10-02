@@ -4,6 +4,17 @@ MODULE module_evaporation
     USE numeric_integration
     IMPLICIT NONE
 
+    PUBLIC :: evaluate_evaporation
+    PRIVATE :: D_Coeff
+    PRIVATE :: p0_H2O
+    PRIVATE :: pw_H2O
+    PRIVATE :: pinf_H2O 
+    PRIVATE :: Sh 
+    PRIVATE :: Sc 
+    PRIVATE :: Re 
+    PRIVATE :: h_m
+    PRIVATE :: dddt
+
 CONTAINS
 
     ! Update Particle Diameter [µm]
@@ -118,7 +129,7 @@ CONTAINS
         ! Reynolds number
         DOUBLE PRECISION :: Re
         ! Conversion Factor (m to µm)
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E-6
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E-6
 
         ! Reynolds Equation
         Re = velocity/nu_air(T_environment)*diameter*conversion
@@ -151,10 +162,10 @@ CONTAINS
         ! Mass Transfer Coefficient [µm/s]
         DOUBLE PRECISION :: h_m
         ! Conversion Factor (m to µm)
-        DOUBLE PRECISION, PARAMETER :: conversion = 10.0E12
+        DOUBLE PRECISION, PARAMETER :: conversion = 1E12
 
         h_m = D_Coeff(T_particle, T_environment)/diameter*Sh(velocity, diameter, T_environment, T_particle)*conversion
-        !print *,"h_m: ",h_m
+        print *,"h_m: ",h_m
         !print *,""
     END FUNCTION
 
