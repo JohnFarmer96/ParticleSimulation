@@ -29,25 +29,21 @@ CONTAINS
         call RANDOM_NUMBER(buffer)
         prtcl%r(3) = (buffer+1)
 
-        ! Verify particle status
-        call verify_status(prtcl)
+        ! Activate Particle
+        prtcl%active = .TRUE.
     END SUBROUTINE
 
     ! Initialize velocity of particles
-    SUBROUTINE initialize_velocity(prtcl, intensity)
+    SUBROUTINE initialize_velocity(prtcl, velocity)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
         ! Direction coefficient [0...1]
-        DOUBLE PRECISION, INTENT(IN) :: intensity
+        DOUBLE PRECISION, DIMENSION(dim), INTENT(IN) :: velocity
 
-        DOUBLE PRECISION :: buffer
-        INTEGER :: idx
+        prtcl%v(1) = velocity(1)
+        prtcl%v(2) = velocity(2)
+        prtcl%v(3) = velocity(3)
 
-        ! Different Velocities
-        do idx = 1, SIZE(prtcl%v, DIM=1) 
-            call RANDOM_NUMBER(buffer)
-            prtcl%v(idx) = 2*(buffer-0.5)*sneeze_vel*intensity
-        end do
 
     END SUBROUTINE
 
@@ -60,13 +56,13 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 1E-3
         
         DOUBLE PRECISION :: buffer
-        ! Assign diameter of core [50nm...10.000nm = 10µm] and convert to [µm]
+        ! Assign diameter of core [50nm...100.000nm = 100µm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_core = (50 + 9950*buffer)*conversion
+        prtcl%d_core = (50 + 99950*buffer)*conversion
 
-        ! Assign diameter of shell [d_core...10µm = 1000µm] and convert to [µm]
+        ! Assign diameter of shell [d_core = 100µm ... 1000µm = 1.000.000nm] and convert to [µm]
         call RANDOM_NUMBER(buffer)
-        prtcl%d_shell = prtcl%d_core + 999000*buffer*conversion
+        prtcl%d_shell = prtcl%d_core + 990000*buffer*conversion
 
         ! Assign temperature of particle [between 20 and 35 °C] and convert to [K]
         call RANDOM_NUMBER(buffer)

@@ -19,17 +19,17 @@ CONTAINS
 
     ! Source: https://www.rosenfluh.ch/ansteckungsrisiken-durch-aerosole
     ! Initialize list of particles
-    SUBROUTINE initialize(concentration, intensity, T_environment, humidity, v_wind)
+    SUBROUTINE initialize(concentration, velocity, T_environment, humidity, v_wind)
         ! Particle concentration in the air [x/m³] (0...30.000)
         INTEGER, INTENT(IN) :: concentration
         ! Intensity coefficient [%] (0...1) 
-        DOUBLE PRECISION :: intensity
+        DOUBLE PRECISION, DIMENSION(dim), INTENT(IN) :: velocity
         ! Velocity of Wind [m/s]
-        DOUBLE PRECISION, DIMENSION(dim) :: v_wind
+        DOUBLE PRECISION, DIMENSION(dim), INTENT(IN) :: v_wind
         ! Temperature of environment [K]
-        DOUBLE PRECISION :: T_environment
+        DOUBLE PRECISION, INTENT(IN) :: T_environment
         ! Relative Humidity in environment [%]
-        DOUBLE PRECISION :: humidity
+        DOUBLE PRECISION, INTENT(IN) :: humidity
 
         INTEGER :: idx
 
@@ -39,7 +39,7 @@ CONTAINS
         !$omp PARALLEL DO 
         do idx = 1, concentration
             call initialize_position(particles(idx))
-            call initialize_velocity(particles(idx), intensity)
+            call initialize_velocity(particles(idx), velocity)
             call initialize_structure(particles(idx))
             call initialize_circumstances(particles(idx), T_environment, humidity, v_wind)
         end do
@@ -48,30 +48,47 @@ CONTAINS
     END SUBROUTINE
 
     ! Update Particle
-    SUBROUTINE update(numeric_integration_procedure_evaporation, numeric_integration_procedure_movement, dt)
+    SUBROUTINE update(integration_procedure_evaporation, integration_procedure_movement, t_total, all_done, timestamp, breakpoint)
         ! Desired numeric integration procedure for evaporation (Euler, Runge-Kutta, ...)
-        PROCEDURE(num_int_procedure) :: numeric_integration_procedure_evaporation
+        PROCEDURE(num_int_procedure) :: integration_procedure_evaporation
         ! Desired numeric integration procedure for movement (Euler, Runge-Kutta, ...)
-        PROCEDURE(num_int_procedure) :: numeric_integration_procedure_movement
-        ! Stepwith [s]
-        DOUBLE PRECISION, INTENT(IN) :: dt
+        PROCEDURE(num_int_procedure) :: integration_procedure_movement
+        ! Total Runtime [s]
+        DOUBLE PRECISION, INTENT(IN) :: t_total
+        ! Timestamp [s]
+        DOUBLE PRECISION, INTENT(IN) :: timestamp
+        ! Indicate if all particles are done
+        LOGICAL, INTENT(INOUT) :: all_done
+        ! Indicate if time breakpoint is reached
+        LOGICAL, INTENT(INOUT) :: breakpoint
 
         ! Local Variables
         INTEGER :: num_of_particles
+        INTEGER :: num_of_inactive
         INTEGER :: idx
         num_of_particles = SIZE(particles, DIM=1) 
 
+        all_done = .FALSE.
+        num_of_inactive = 0
         !$omp PARALLEL DO 
         do idx = 1, num_of_particles
-            IF (particles(idx)%active .eqv. .TRUE.) THEN
-                call evaluate_movement(numeric_integration_procedure_movement, particles(idx), dt)
-                call evaluate_evaporation(numeric_integration_procedure_evaporation, particles(idx), dt)
+            IF (particles(idx)%time_elapsed .GE. timestamp) THEN
+                call evaluate_movement(integration_procedure_movement, particles(idx), t_total)
+                call evaluate_evaporation(integration_procedure_evaporation, particles(idx))
                 particles(idx)%time_elapsed = particles(idx)%time_elapsed + particles(idx)%dt
+            ELSE
+                num_of_inactive = num_of_inactive + 1
             END IF
         end do
         !$omp END PARALLEL DO
 
-        print *,"Elapsed time: ",particles(1)%time_elapsed
+        IF (num_of_inactive .EQ. num_of_particles) THEN 
+            breakpoint = .TRUE. 
+        ELSE 
+            breakpoint = .FALSE.
+        END IF
+        num_of_inactive = 0
+        IF (breakpoint .EQV. .TRUE. .AND. particles(1)%time_elapsed .EQ. t_total) all_done = .TRUE.
     END SUBROUTINE
 
     FUNCTION output(start_idx, end_idx)

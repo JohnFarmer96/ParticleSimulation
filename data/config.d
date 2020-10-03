@@ -1,8 +1,9 @@
-10         :: concentration
-0.5         :: intensity
-0.000003   :: dt
-0.01    :: t_total
-10           :: v_wind_x
+10          :: concentration
+3          :: t_total
+-5           :: v_x
+0           :: v_y
+0           :: v_z
+10          :: v_wind_x
 0           :: v_wind_y
 0           :: v_wind_z
 0.1         :: humidity

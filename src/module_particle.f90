@@ -126,14 +126,18 @@ CONTAINS
     END SUBROUTINE
 
     ! Verify if particle is still active
-    SUBROUTINE verify_status(prtcl)
+    SUBROUTINE verify_status(prtcl, t_total)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
+        ! Total Simulaiton Time
+        DOUBLE PRECISION, INTENT(IN) :: t_total
 
         ! Check if z-coordinate is less or equal to 0 (ground-level)
         IF ( prtcl%r(3) .le. 0.d0 ) THEN
             prtcl%active = .FALSE.
             prtcl%r(3) = 0
+        ELSE IF (prtcl%time_elapsed .ge. t_total) THEN
+            prtcl%active = .FALSE.
         ELSE
             prtcl%active = .TRUE.
         END IF

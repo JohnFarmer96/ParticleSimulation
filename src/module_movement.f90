@@ -11,13 +11,13 @@ MODULE module_movement
 CONTAINS
 
     ! Update Particle Movement [location: m, velocity: m/s, acceleration: m/s²]
-    SUBROUTINE evaluate_movement(numeric_integration_procedure, prtcl, dt)
+    SUBROUTINE evaluate_movement(numeric_integration_procedure, prtcl, t_total)
         ! Desired numeric integration procedure (Euler, Runge-Kutta, ...)
         PROCEDURE(num_int_procedure) :: numeric_integration_procedure
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
-        ! Stepwidth [s]
-        DOUBLE PRECISION, INTENT(IN) :: dt
+        ! Indicate if all particles are simulated
+        DOUBLE PRECISION, INTENT(IN) :: t_total
 
         ! Key Value
         DOUBLE PRECISION, DIMENSION(2*dim) :: y
@@ -28,6 +28,7 @@ CONTAINS
         y(1:SIZE(y, DIM=1)/2) = prtcl%r
         y(SIZE(y, DIM=1)/2+1:) = prtcl%v
 
+        ! Evaluate Force and Adapt Stepwidth
         call evaluate_force(prtcl)
         params(1) = prtcl%f(1) ![µN]
         params(2) = prtcl%f(2) ![µN]
@@ -42,7 +43,7 @@ CONTAINS
         prtcl%v = y((2*dim)/2+1:)
 
         ! Verify Changes
-        call verify_status(prtcl)
+        call verify_status(prtcl, t_total)
     END SUBROUTINE
 
     ! Change of status variable

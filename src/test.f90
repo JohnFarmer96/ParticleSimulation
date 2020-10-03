@@ -15,23 +15,27 @@ PROGRAM test
     ! Particle concentration in the air [x/m³] (0...30.000)
     INTEGER :: concentration
     ! Intensity coefficient [%] (0...1) 
-    DOUBLE PRECISION :: intensity
+    DOUBLE PRECISION, DIMENSION(dim) :: velocity
     ! Velocity of Wind [m/s]
     DOUBLE PRECISION, DIMENSION(dim) :: v_wind
     ! Temperature of environment [K]
     DOUBLE PRECISION :: T_environment
     ! Relative Humidity in environment [%] (0...1)
     DOUBLE PRECISION :: humidity
-    ! Stepwidth [s]
-    DOUBLE PRECISION :: dt
     ! Total Simulation Time [s]
     DOUBLE PRECISION :: t_total
     ! ==============================================================
 
     ! Data Array 
     DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: data_array
+    ! Stop computation
+    LOGICAL :: all_done
+    ! Time breakpoint to print values
+    LOGICAL :: breakpoint
+    ! Current timestamp 
+    DOUBLE PRECISION :: timestamp
     ! Number of Iterations
-    INTEGER :: n_cur, n_iter
+    INTEGER :: n_cur, pot
 
     print *,"Started" 
 
@@ -42,7 +46,7 @@ PROGRAM test
 
     ! Initialize Particles
     n_cur = 0
-    call initialize(concentration, intensity, T_environment, humidity, v_wind)
+    call initialize(concentration, velocity, T_environment, humidity, v_wind)
     print *,"Initialization Complete"
 
     ! Save initial configuration
@@ -51,18 +55,30 @@ PROGRAM test
     print *,"Initialization Saved"
     
     ! Execute Simulation
-    n_iter = 1000000
+    all_done = .FALSE.
+    breakpoint = .FALSE.
+    timestamp = 1E-3
+    n_cur = 0
+    pot = 0
     print *,"Simulation Started"
-    do n_cur = 1, n_iter
-        call update(euler, euler, dt)
+    do while (all_done .eqv. .FALSE.)
+        n_cur = n_cur + 1
 
-        IF(MODULO(n_cur, 100000) .eq. 0) THEN
+        call update(euler, euler, t_total, all_done, 0.1d0, breakpoint)
+
+        IF(breakpoint .EQV. .TRUE.) THEN
+            pot = pot + 1
+            timestamp = timestamp*10**pot
             ! Write result
             data_array = output(start_idx=1, end_idx=concentration)
-            call write_to_file(base_path, n_cur)
+            call write_to_file(base_path, pot)
         END IF
     end do
     print *,"Simulation Completed"
+
+    ! Write result
+    data_array = output(start_idx=1, end_idx=concentration)
+    call write_to_file(base_path, -1)
 
     ! Print Success
     print *,"Program Done"
@@ -86,14 +102,17 @@ CONTAINS
         read (unit_no,*) concentration
         print *,"Concentration: ",concentration
 
-        read (unit_no,*) intensity
-        print *,"Intensity: ",intensity
-
-        read (unit_no,*) dt
-        print *,"Stepwidth: ",dt
-
         read (unit_no,*) t_total
         print *,"Total Time: ",t_total
+
+        read (unit_no,*) velocity(1)
+        print *,"Stepwidth: ",velocity(1)
+
+        read (unit_no,*) velocity(2)
+        print *,"Total Time: ",velocity(2)
+
+        read (unit_no,*) velocity(3)
+        print *,"Total Time: ",velocity(3)
 
         read (unit_no,*) v_wind(1)
         print *,"Velocity of Wind (x): ",v_wind(1)
@@ -128,8 +147,10 @@ CONTAINS
         IF (n_current .GT. 0) THEN
             WRITE(FMT,'("(I", I0, ")")') INT(LOG10(REAL(n_current))+1)
             WRITE (filename_suffix, FMT) n_current
-        ELSE 
-            WRITE(filename_suffix, '(I1)') 0
+        ELSE IF (n_current .EQ. 0) THEN
+            WRITE(filename_suffix, '(a4)') "init"
+        ELSE
+            WRITE(filename_suffix, '(a5)') "final"
         END IF
 
         filename = TRIM(filename_base)//TRIM(filename_suffix)//'.dat'

@@ -18,13 +18,11 @@ MODULE module_evaporation
 CONTAINS
 
     ! Update Particle Diameter [µm]
-    SUBROUTINE evaluate_evaporation(numeric_integration_procedure, prtcl, dt)
+    SUBROUTINE evaluate_evaporation(numeric_integration_procedure, prtcl)
         ! Desired numeric integration procedure (Euler, Runge-Kutta, ...)
         PROCEDURE(num_int_procedure) :: numeric_integration_procedure
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
-        ! Stepwidth [s]
-        DOUBLE PRECISION, INTENT(IN) :: dt
         
         ! Key Value
         DOUBLE PRECISION, DIMENSION(1) :: y
@@ -42,7 +40,7 @@ CONTAINS
             params(3) = v_euclid(prtcl)
             params(4) = prtcl%humidity
             ! Update Key Value
-            call numeric_integration_procedure(dddt, y, dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
+            call numeric_integration_procedure(dddt, y, prtcl%dt, params, SIZE(params, DIM=1), SIZE(y, DIM=1))
             ! Store Changes
             prtcl%d_shell = y(1)
             
@@ -192,7 +190,7 @@ CONTAINS
         ! Calculation
         dddt(1) = - 2/(rho_H20)*h_m(y(1), T_environment, T_particle, velocity)*M_H2O/R*(pw_H2O(T_particle)/T_particle &
             - pinf_H2O(T_environment, humidity)/T_environment)
-        !print *,"dddt: ",dddt(1)
+        ! print *,"dddt: ",dddt(1)
     END FUNCTION
 
 END MODULE module_evaporation
