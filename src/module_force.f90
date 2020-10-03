@@ -63,6 +63,7 @@ CONTAINS
         f_r = 6*PI*etha_air(prtcl%T_environment)*(prtcl%d_shell/2)*prtcl%v*(-1)*conversion/ccorr
         prtcl%f = prtcl%f + f_r
 
+        ! Dynamically set stepwidth [s]
         call set_dt(prtcl, sqrt(sum(f_r**2)))
     END SUBROUTINE
 
