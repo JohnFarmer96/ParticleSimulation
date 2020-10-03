@@ -6,9 +6,9 @@ MOD_DIR = src/
 MKL_DIR = ../packages/
 
 # Programmname
-PROG = test
+PROG = particle_simulation
 # Liste der Quelldateien
-SRCS = test.f90
+SRCS = main.f90
 # Liste der Objektdateien (geordnet)
 MODS = module_parameters.f90 module_particle.f90 module_init.f90 numeric_integration.f90 module_force.f90 module_evaporation.f90 module_movement.f90 particle_simulation.f90
 # Liste der MKL-Dateien (geordnet)

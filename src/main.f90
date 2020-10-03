@@ -35,7 +35,7 @@ PROGRAM test
     ! Current timestamp 
     DOUBLE PRECISION :: timestamp
     ! Number of Iterations
-    INTEGER :: n_cur, pot
+    INTEGER :: n_cur
 
     print *,"Started" 
 
@@ -57,28 +57,22 @@ PROGRAM test
     ! Execute Simulation
     all_done = .FALSE.
     breakpoint = .FALSE.
-    timestamp = 1E-3
+    timestamp = 1E-1
     n_cur = 0
-    pot = 0
     print *,"Simulation Started"
     do while (all_done .eqv. .FALSE.)
-        n_cur = n_cur + 1
 
-        call update(euler, euler, t_total, all_done, 0.1d0, breakpoint)
+        call update(euler, euler, t_total, all_done, timestamp, breakpoint)
 
         IF(breakpoint .EQV. .TRUE.) THEN
-            pot = pot + 1
-            timestamp = timestamp*10**pot
+            n_cur = n_cur + 1
+            timestamp = timestamp + 1E-1
             ! Write result
             data_array = output(start_idx=1, end_idx=concentration)
-            call write_to_file(base_path, pot)
+            call write_to_file(base_path, n_cur)
         END IF
     end do
     print *,"Simulation Completed"
-
-    ! Write result
-    data_array = output(start_idx=1, end_idx=concentration)
-    call write_to_file(base_path, -1)
 
     ! Print Success
     print *,"Program Done"
@@ -147,10 +141,8 @@ CONTAINS
         IF (n_current .GT. 0) THEN
             WRITE(FMT,'("(I", I0, ")")') INT(LOG10(REAL(n_current))+1)
             WRITE (filename_suffix, FMT) n_current
-        ELSE IF (n_current .EQ. 0) THEN
-            WRITE(filename_suffix, '(a4)') "init"
         ELSE
-            WRITE(filename_suffix, '(a5)') "final"
+            WRITE(filename_suffix, '(I1)') 0
         END IF
 
         filename = TRIM(filename_base)//TRIM(filename_suffix)//'.dat'
@@ -164,11 +156,11 @@ CONTAINS
         end if 
 
         ! Write out Headline
-        WRITE (unit_no, '(23(a14))') "idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
+        WRITE (unit_no, '(23(a18))') "idx","time","r_x", "r_y","r_z","v_x","v_y","v_z","d_core",&
         "d_shell","T_par","T_env","humid","vw_x","vw_y","vw_z","m_c","m_s","f_x","f_y","f_z","core","active" 
         ! Write out Variables
         do idx = 1, concentration
-            write(unit_no, '(23(g14.7))') data_array(idx,:)
+            write(unit_no, '(23(g18.7))') data_array(idx,:)
         end do
 
         ! Close File Before Ending

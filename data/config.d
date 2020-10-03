@@ -1,9 +1,9 @@
 10          :: concentration
 3          :: t_total
--5           :: v_x
+5           :: v_x
 0           :: v_y
 0           :: v_z
-10          :: v_wind_x
+0          :: v_wind_x
 0           :: v_wind_y
 0           :: v_wind_z
 0.1         :: humidity

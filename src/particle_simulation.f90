@@ -36,7 +36,7 @@ CONTAINS
         ! Allocate particles list
         ALLOCATE(particles(concentration))
 
-        !$omp PARALLEL DO 
+        !$omp PARALLEL DO, NUM_THREADS(MAX)
         do idx = 1, concentration
             call initialize_position(particles(idx))
             call initialize_velocity(particles(idx), velocity)
@@ -70,9 +70,9 @@ CONTAINS
 
         all_done = .FALSE.
         num_of_inactive = 0
-        !$omp PARALLEL DO 
+        !$omp PARALLEL DO NUM_THREADS(MAX)
         do idx = 1, num_of_particles
-            IF (particles(idx)%time_elapsed .GE. timestamp) THEN
+            IF (particles(idx)%time_elapsed .LE. timestamp) THEN
                 call evaluate_movement(integration_procedure_movement, particles(idx), t_total)
                 call evaluate_evaporation(integration_procedure_evaporation, particles(idx))
                 particles(idx)%time_elapsed = particles(idx)%time_elapsed + particles(idx)%dt
@@ -87,8 +87,9 @@ CONTAINS
         ELSE 
             breakpoint = .FALSE.
         END IF
-        num_of_inactive = 0
-        IF (breakpoint .EQV. .TRUE. .AND. particles(1)%time_elapsed .EQ. t_total) all_done = .TRUE.
+        IF (particles(1)%time_elapsed .GE. t_total .AND. breakpoint .EQV. .TRUE.) THEN
+            all_done = .TRUE.
+        END IF
     END SUBROUTINE
 
     FUNCTION output(start_idx, end_idx)
@@ -99,7 +100,7 @@ CONTAINS
 
         INTEGER :: idx_particles, idx_array
 
-        !$omp PARALLEL DO 
+        !$omp PARALLEL DO NUM_THREADS(MAX)
         do idx_particles = start_idx, end_idx
             ! Adapt indexing
             idx_array = idx_particles - start_idx + 1
