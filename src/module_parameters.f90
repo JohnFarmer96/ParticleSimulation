@@ -54,16 +54,6 @@ MODULE module_parameters
     DOUBLE PRECISION, PARAMETER :: PI = 4.d0 * DATAN(1.d0)
 
     ! ========================================================
-    
-
-
-    ! TOPIC RELATED PARAMETERS
-    ! ========================================================
-
-    ! Maximum Velocity of Particles when sneezing [m/s]
-    DOUBLE PRECISION, PARAMETER :: sneeze_vel = 44
-
-    ! ========================================================
 
 CONTAINS
 

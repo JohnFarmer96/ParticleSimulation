@@ -49,7 +49,7 @@ MODULE module_particle
         ! Relative Humidity in environment [%]
         DOUBLE PRECISION :: humidity
 
-        ! Individual Stepwidth
+        ! Current Stepwidth [s]
         DOUBLE PRECISION :: dt
 
     END TYPE particle
@@ -143,6 +143,7 @@ CONTAINS
         END IF
     END SUBROUTINE
 
+    ! Set current stepwidth [s]
     SUBROUTINE set_dt(prtcl, f_r)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
@@ -152,6 +153,8 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: boundary = 5E-4
         ! Conversion Factor
         DOUBLE PRECISION, PARAMETER :: conversion = 1E-9
+        ! Default Value 
+        DOUBLE PRECISION, PARAMETER :: default = 1E-3
 
         ! Local parameters
         DOUBLE PRECISION :: dt1, dt2
@@ -165,7 +168,7 @@ CONTAINS
             prtcl%dt = dt1
         END IF
 
-        IF(prtcl%dt .GT. 1) prtcl%dt = 1E-3
+        IF(prtcl%dt .GT. 1) prtcl%dt = default
     END SUBROUTINE
     
 END MODULE module_particle

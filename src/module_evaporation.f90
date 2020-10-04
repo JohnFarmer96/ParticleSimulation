@@ -113,7 +113,6 @@ CONTAINS
 
         ! Froessling Equation
         Sh = 2 + 0.552*Re(velocity, diameter, T_environment)**(0.5)*Sc(T_environment, T_particle)**(0.33)
-        ! print *,"Sherwood: ",Sh
     END FUNCTION
 
     ! Calculate Reynolds number [dimensionless]
@@ -131,10 +130,6 @@ CONTAINS
 
         ! Reynolds Equation
         Re = velocity/nu_air(T_environment)*diameter*conversion
-        ! print *,"Velocity: ",velocity
-        ! print *,"nu: ", nu_air(T_environment)
-        ! print *,"diameter: ", diameter
-        ! print *,"Reynolds: ", Re
     END FUNCTION
 
     ! Calculate Schmidt number [dimensionless]
@@ -146,7 +141,6 @@ CONTAINS
 
         ! Froessling Equation
         Sc = nu_air(T_environment)/D_Coeff(T_particle, T_environment)
-        !print *,"Schmidt: ",Sc
     END FUNCTION
 
     ! Calculate mass transfer coefficient [µm/s]
@@ -163,8 +157,6 @@ CONTAINS
         DOUBLE PRECISION, PARAMETER :: conversion = 1E12
 
         h_m = D_Coeff(T_particle, T_environment)/diameter*Sh(velocity, diameter, T_environment, T_particle)*conversion
-        !print *,"h_m: ",h_m
-        !print *,""
     END FUNCTION
 
     ! 1st Order Derivative of particle diameter [µm/s]
@@ -186,11 +178,9 @@ CONTAINS
         velocity = params(3)
         humidity = params(4)
 
-        !print *,"y: ",y
         ! Calculation
         dddt(1) = - 2/(rho_H20)*h_m(y(1), T_environment, T_particle, velocity)*M_H2O/R*(pw_H2O(T_particle)/T_particle &
             - pinf_H2O(T_environment, humidity)/T_environment)
-        ! print *,"dddt: ",dddt(1)
     END FUNCTION
 
 END MODULE module_evaporation

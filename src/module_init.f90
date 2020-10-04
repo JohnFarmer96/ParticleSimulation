@@ -68,6 +68,7 @@ CONTAINS
         prtcl%T = T_0 + 20 + 15*buffer
     END SUBROUTINE
 
+    ! Initialize Particle Circumstances
     SUBROUTINE initialize_circumstances(prtcl, T_environment, humidity, v_wind)
         ! Desired particle
         TYPE(particle), INTENT(INOUT) :: prtcl
