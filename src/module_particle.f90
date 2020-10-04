@@ -152,15 +152,17 @@ CONTAINS
         ! Max change of acceleration [m/s]
         DOUBLE PRECISION, PARAMETER :: boundary = 5E-4
         ! Conversion Factor
-        DOUBLE PRECISION, PARAMETER :: conversion = 1E-9
+        DOUBLE PRECISION, PARAMETER :: conversion1 = 1E-9
+        ! Conversion Factor
+        DOUBLE PRECISION, PARAMETER :: conversion2 = 1E-6
         ! Default Value 
         DOUBLE PRECISION, PARAMETER :: default = 1E-3
 
         ! Local parameters
         DOUBLE PRECISION :: dt1, dt2
 
-        dt1 = boundary * (mass_core(prtcl) + mass_shell(prtcl))/f_r*conversion
-        dt2 = prtcl%d_shell/(200*v_euclid(prtcl))
+        dt1 = boundary * (mass_core(prtcl) + mass_shell(prtcl))/f_r*conversion1
+        dt2 = prtcl%d_shell/(200*v_euclid(prtcl))*conversion2
 
         IF(dt1 .ge. dt2) THEN
             prtcl%dt = dt2
