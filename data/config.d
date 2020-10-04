@@ -1,5 +1,5 @@
 20 	 :: concentration [1] 
-1	 :: t_total [s] 
+10	 :: t_total [s] 
 0.1	 :: t_resolution [s] 
 0	 :: v_x [m/s] 
 0	 :: v_y [m/s] 

@@ -13,11 +13,11 @@ The main structure divides up into two parts:
 For the sake of efficiency the mathematical problems is executed by a fortran based program that is stored in "dist/" directory.
 The program is precompiled (GNU-Fortran-Compiler) and ready to be executed, which can be achieved by calling
 
-> make run
+`$ make run`
 
 If the provided distribution doesn't match your CPU-architecture, it can be re-compiled by calling
 
-> make build
+`$ make build`
 
 Make sure GNU-Fortran-Compiler is installed (<https://gcc.gnu.org/>).
 
@@ -46,7 +46,9 @@ The code can be executed in two ways:
 - Plain Python Script (~python/main.py)
 
 The provided source code outputs plots showing the movement at a certain timestamp (3D) and pre-selected single features over the entire simulation-duration (2D).
-An example snippet is shown below.
+An example snippet is shown below *(Green: particles still in the air, Red: particles on the ground)*.
+
+![Alt text](doc/plot_example.svg)
 
 ## Documentation
 
@@ -57,6 +59,8 @@ Both - Fortran and Python - Codes are annotated in detail and therefore easy to 
 
 To download the project run:
 
-> $ git clone <https://github.com/JohnFarmer96/ParticleSimulation>
+`$ git clone <https://github.com/JohnFarmer96/ParticleSimulation>`
 
-After the project is stored locally you can explore the behaviour by executing the make-commands mentioned above or the provided shell script "execute.sh"
+After the project is stored locally you can explore the behaviour by executing the make-commands mentioned above or the provided shell script
+
+`$ ./execute.sh`
