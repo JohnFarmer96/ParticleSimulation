@@ -2,21 +2,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os.path
 
-basename_read = 'data/particle_simulation_result_'
+basename_read = '/particle_simulation_result_'
 basename_write = 'python/data/particle_simulation_python_'
 
 # Load all .dat files
-def load_all():
+def load_all(directory):
+    directory = directory + basename_read
     result_array = []
     end_of_stream = False
     index = 0
     while(end_of_stream != True):
-        filename = basename_read + str(index) + '.dat'
+        filename = directory + str(index) + '.dat'
         if(os.path.isfile(filename) == True):
             result_array.append(np.genfromtxt(filename, dtype=float, skip_header=1, filling_values=0))
-            print("File was read successfully:" + filename)
         else:
             end_of_stream = True
+
+        if(index == 0 and end_of_stream == True):
+            print("Directory '" + str(directory) + "' was not found")
         index = index + 1
     return np.array(result_array)
 

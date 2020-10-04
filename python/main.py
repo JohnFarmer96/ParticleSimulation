@@ -47,7 +47,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # ? Start of Main Code ==========================================================================================
 
-a = fi.load_all()
+a = fi.load_all("data")
 num_of_timesteps, num_of_particles, num_of_variables = np.shape(a)
 
 print('Number of Timesteps: ' + str(num_of_timesteps))

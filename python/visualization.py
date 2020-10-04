@@ -1,6 +1,42 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def show_movement_notebook(array, t_start_idx, t_end_idx, t_spacing):
+    plot_num = 0
+    for i in range(t_start_idx, t_end_idx, t_spacing):
+        # Iterate over plot number
+        plot_num = plot_num + 1
+        
+        # Determine Point Size Factor
+        size = array[i,:,9]
+        color = color = array[i,:,22]
+
+        if(min(array[i,:,22]) == 0):
+            colormap = 'RdYlGn'
+        else:
+            colormap = 'summer'
+        
+        # Create Plot
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1, projection='3d')
+        
+        scatter = ax.scatter(array[i,:,2], array[i,:,3], array[i,:,4], s=size, c=color, cmap=colormap)
+        ax.quiver(array[i,:,2], array[i,:,3], array[i,:,4], array[i,:,5], array[i,:,6], array[i,:,7])
+
+        # Produce a legend with a cross section of sizes from the scatter
+        handles, labels = scatter.legend_elements(prop="sizes", alpha=0.6)
+        ax.legend(handles, labels, loc="upper left", title="Sizes [µm]")
+
+        # Create title and Axis-Annotation
+        cur_time = f"{array[i,0,1]:.2f}"
+        title = 'Movement at: ' + str(cur_time) + ' Seconds' 
+        ax.set_title(title, fontweight="bold")
+        ax.set_xlabel('X [m]')
+        ax.set_ylabel('Y [m]')
+        ax.set_zlabel('Z [m]')
+        plt.show()
+
+
 def show_movement(array, t_start_idx, t_end_idx, t_spacing):
     fig = plt.figure()
     total = (t_end_idx - t_start_idx)/t_spacing
@@ -17,10 +53,11 @@ def show_movement(array, t_start_idx, t_end_idx, t_spacing):
         
         # Create Plot
         ax = fig.add_subplot(rows,cols,plot_num, projection='3d')
-        if(i == 0):
-            colormap = 'summer'
-        else:
+        if(min(array[i,:,22]) == 0):
             colormap = 'RdYlGn'
+        else:
+            colormap = 'summer'
+            
         scatter = ax.scatter(array[i,:,2], array[i,:,3], array[i,:,4], s=size, c=color, cmap=colormap)
         ax.quiver(array[i,:,2], array[i,:,3], array[i,:,4], array[i,:,5], array[i,:,6], array[i,:,7])
 
@@ -29,7 +66,7 @@ def show_movement(array, t_start_idx, t_end_idx, t_spacing):
         ax.legend(handles, labels, loc="upper left", title="Sizes [µm]")
 
         # Create title and Axis-Annotation
-        cur_time = f"{array[i,0,1]:.1f}"
+        cur_time = f"{array[i,0,1]:.2f}"
         title = 'Movement at: ' + str(cur_time) + ' Seconds' 
         #ax.title.set_text(title)
         ax.set_title(title, fontweight="bold")

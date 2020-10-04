@@ -164,6 +164,8 @@ CONTAINS
         ELSE
             prtcl%dt = dt1
         END IF
+
+        IF(prtcl%dt .GT. 1) prtcl%dt = 1E-3
     END SUBROUTINE
     
 END MODULE module_particle
