@@ -12,11 +12,16 @@ def show_movement(array, t_start_idx, t_end_idx, t_spacing):
         plot_num = plot_num + 1
         
         # Determine Point Size Factor
-        size = array[i,:,9] #/max(array[i,:,9])*100
+        size = array[i,:,9]
+        color = array[i,:,22]
         
         # Create Plot
         ax = fig.add_subplot(rows,cols,plot_num, projection='3d')
-        scatter = ax.scatter(array[i,:,2], array[i,:,3], array[i,:,4], s=size)
+        if(i == 0):
+            colormap = 'summer'
+        else:
+            colormap = 'RdYlGn'
+        scatter = ax.scatter(array[i,:,2], array[i,:,3], array[i,:,4], s=size, c=color, cmap=colormap)
         ax.quiver(array[i,:,2], array[i,:,3], array[i,:,4], array[i,:,5], array[i,:,6], array[i,:,7])
 
         # Produce a legend with a cross section of sizes from the scatter
@@ -35,9 +40,19 @@ def show_movement(array, t_start_idx, t_end_idx, t_spacing):
     fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)
     return fig
 
-def plot_single_feature(array, sf_num, start_idx, end_idx, spacing):
+def plot_single_feature(array, sf_col, title, ylabel):
+
+    shape = np.shape(array)
+    rows = shape[1]
+
     fig = plt.figure()
 
+    for row in range(rows):
+        plt.plot(array[:,row,1], array[:,row,sf_col])
+    
+    plt.title(title)
+    plt.xlabel('Time [s]')
+    plt.ylabel(ylabel)
 
     return fig
 

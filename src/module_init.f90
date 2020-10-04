@@ -60,9 +60,8 @@ CONTAINS
         call RANDOM_NUMBER(buffer)
         prtcl%d_core = (50 + 99950*buffer)*conversion
 
-        ! Assign diameter of shell [d_core = 100µm ... 1000µm = 1.000.000nm = 1 mm] and convert to [µm]
-        call RANDOM_NUMBER(buffer)
-        prtcl%d_shell = prtcl%d_core + 990000*buffer*conversion
+        ! Assign diameter of shell (water) 10% of core and convert to [µm]
+        prtcl%d_shell = prtcl%d_core*1.1
 
         ! Assign temperature of particle [between 20 and 35 °C] and convert to [K]
         call RANDOM_NUMBER(buffer)

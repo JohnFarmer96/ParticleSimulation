@@ -48,8 +48,16 @@ from mpl_toolkits.mplot3d import Axes3D
 # ? Start of Main Code ==========================================================================================
 
 a = fi.load_all()
-print(np.shape(a))
+num_of_timesteps, num_of_particles, num_of_variables = np.shape(a)
 
-fig = vis.show_movement(a, t_start_idx=0, t_end_idx=25, t_spacing=5)
+print('Number of Timesteps: ' + str(num_of_timesteps))
+print('Number of Particles: ' + str(num_of_particles))
+print('Number of Variables: ' + str(num_of_variables))
 
+spacing = int(num_of_timesteps/5)
+fig = vis.show_movement(a, t_start_idx=0, t_end_idx=6, t_spacing=1)
+fig2 = vis.plot_single_feature(a, 9, "Particle Shell Size", "Diameter [µm]")
+fig3 = vis.plot_single_feature(a, 18, 'Acting Force (x-Direction)', 'Force [µN]')
+fig4 = vis.plot_single_feature(a, 19, 'Acting Force (y-Direction)', 'Force [µN]')
+fig5 = vis.plot_single_feature(a, 20, 'Acting Force (z-Direction)', 'Force [µN]')
 plt.show()

@@ -1,10 +1,11 @@
-10          :: concentration
-3          :: t_total
-5           :: v_x
-0           :: v_y
-0           :: v_z
-0          :: v_wind_x
-0           :: v_wind_y
-0           :: v_wind_z
-0.1         :: humidity
-300         :: T_environment
+20          :: concentration [1]
+10          :: t_total [s]
+0.01           :: t_resolution [s]
+-5           :: v_x [m/s]
+0           :: v_y [m/s]
+0           :: v_z [m/s]
+10           :: v_wind_x [m/s]
+0           :: v_wind_y [m/s]
+0           :: v_wind_z [m/s]
+0.9         :: humidity [% 0..1]
+300         :: T_environment [K]

@@ -1,4 +1,4 @@
-PROGRAM test
+PROGRAM main
     USE numeric_integration
     USE particle_simulation
     IMPLICIT NONE
@@ -32,6 +32,8 @@ PROGRAM test
     LOGICAL :: all_done
     ! Time breakpoint to print values
     LOGICAL :: breakpoint
+    ! Time resolution 
+    DOUBLE PRECISION :: t_resolution
     ! Current timestamp 
     DOUBLE PRECISION :: timestamp
     ! Number of Iterations
@@ -57,7 +59,7 @@ PROGRAM test
     ! Execute Simulation
     all_done = .FALSE.
     breakpoint = .FALSE.
-    timestamp = 1E-1
+    timestamp = t_resolution
     n_cur = 0
     print *,"Simulation Started"
     do while (all_done .eqv. .FALSE.)
@@ -66,7 +68,7 @@ PROGRAM test
 
         IF(breakpoint .EQV. .TRUE.) THEN
             n_cur = n_cur + 1
-            timestamp = timestamp + 1E-1
+            timestamp = timestamp + t_resolution
             ! Write result
             data_array = output(start_idx=1, end_idx=concentration)
             call write_to_file(base_path, n_cur)
@@ -98,6 +100,9 @@ CONTAINS
 
         read (unit_no,*) t_total
         print *,"Total Time: ",t_total
+
+        read (unit_no,*) t_resolution
+        print *,"Time Resolution: ",t_resolution
 
         read (unit_no,*) velocity(1)
         print *,"Stepwidth: ",velocity(1)
