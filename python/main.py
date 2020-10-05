@@ -54,8 +54,12 @@ print('Number of Timesteps: ' + str(num_of_timesteps))
 print('Number of Particles: ' + str(num_of_particles))
 print('Number of Variables: ' + str(num_of_variables))
 
-spacing = int(num_of_timesteps/5)
-fig = vis.show_movement(a, t_start_idx=0, t_end_idx=6, t_spacing=1)
+num_of_charts = 6
+start = 0
+end = num_of_timesteps
+spacing = int((end-start)/(num_of_charts-1))
+
+fig1 = vis.show_movement(a, t_start_idx=start, t_end_idx=num_of_timesteps, t_spacing=spacing)
 fig2 = vis.plot_single_feature(a, 9, "Particle Shell Size", "Diameter [µm]")
 fig3 = vis.plot_single_feature(a, 18, 'Acting Force (x-Direction)', 'Force [µN]')
 fig4 = vis.plot_single_feature(a, 19, 'Acting Force (y-Direction)', 'Force [µN]')

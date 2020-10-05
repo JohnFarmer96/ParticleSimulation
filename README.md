@@ -59,7 +59,7 @@ Both - Fortran and Python - Codes are annotated in detail and therefore easy to 
 
 To download the project run:
 
-`$ git clone <https://github.com/JohnFarmer96/ParticleSimulation>`
+`$ git clone https://github.com/JohnFarmer96/ParticleSimulation`
 
 After the project is stored locally you can explore the behaviour by executing the make-commands mentioned above or the provided shell script
 
