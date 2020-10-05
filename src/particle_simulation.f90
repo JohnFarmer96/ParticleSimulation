@@ -38,7 +38,7 @@ CONTAINS
         ! Allocate particles list
         ALLOCATE(particles(concentration))
 
-        !$omp PARALLEL DO, NUM_THREADS(MAX)
+        !$omp PARALLEL DO
         do idx = 1, concentration
             call initialize_position(particles(idx))
             call initialize_velocity(particles(idx), velocity)
@@ -74,7 +74,7 @@ CONTAINS
 
         all_done = .FALSE.
         num_of_inactive = 0
-        !$omp PARALLEL DO NUM_THREADS(MAX)
+        !$omp PARALLEL DO
         do idx = 1, num_of_particles
             IF (particles(idx)%time_elapsed .LE. timestamp) THEN
                 call evaluate_movement(integration_procedure_movement, particles(idx), t_total)
@@ -111,7 +111,7 @@ CONTAINS
 
         INTEGER :: idx_particles, idx_array
 
-        !$omp PARALLEL DO NUM_THREADS(MAX)
+        !$omp PARALLEL DO
         do idx_particles = start_idx, end_idx
             ! Adapt indexing
             idx_array = idx_particles - start_idx + 1

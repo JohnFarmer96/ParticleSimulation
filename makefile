@@ -18,7 +18,7 @@ FC = gfortran
 # Compilieroptionen beim Übersetzen
 FLAGS = -O2
 # Bibliotheken
-LIBS =  # ? ${MKLROOT}/lib/intel64/libmkl_blas95_ilp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_ilp64.a -L${MKLROOT}/lib/intel64 -lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
+LIBS =  #-fopenmp # ? ${MKLROOT}/lib/intel64/libmkl_blas95_ilp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_ilp64.a -L${MKLROOT}/lib/intel64 -lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
 # * ================== ADAPT DIRECTORY PREFIXES ============================
 PRG_PATH = $(addprefix $(PRG_DIR),$(PROG))
